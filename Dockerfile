@@ -1,6 +1,6 @@
-# Using https://github.com/gliderlabs/docker-alpine,
+# Using https://github.com/alpinelinux/docker-alpine
 # plus  https://github.com/just-containers/s6-overlay for a s6 Docker overlay.
-FROM gliderlabs/alpine:3.6
+FROM alpine:latest
 # Initially was based on work of Christian Lück <christian@lueck.tv>.
 LABEL description="A complete, self-hosted Tiny Tiny RSS (TTRSS) environment." \
       maintainer="Andreas Löffler <andy@x86dev.com>"
@@ -8,7 +8,7 @@ LABEL description="A complete, self-hosted Tiny Tiny RSS (TTRSS) environment." \
 RUN set -xe && \
     apk update && apk upgrade && \
     apk add --no-cache --virtual=run-deps \
-    busybox nginx git ca-certificates curl \
+    nginx git ca-certificates curl \
     php7 php7-fpm php7-curl php7-dom php7-gd php7-iconv php7-fileinfo php7-json \
     php7-mcrypt php7-pgsql php7-pcntl php7-pdo php7-pdo_pgsql \
     php7-mysqli php7-pdo_mysql \
@@ -23,7 +23,7 @@ COPY root /
 
 # Add s6 overlay.
 # Note: Tweak this line if you're running anything other than x86 AMD64 (64-bit).
-RUN curl -L -s https://github.com/just-containers/s6-overlay/releases/download/v1.19.1.1/s6-overlay-amd64.tar.gz | tar xvzf - -C /
+RUN curl -L -s https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-amd64.tar.gz | tar xvzf - -C /
 
 # Add wait-for-it.sh
 ADD https://raw.githubusercontent.com/Eficode/wait-for/master/wait-for /srv
@@ -34,9 +34,15 @@ EXPOSE 8080
 EXPOSE 4443
 
 # Expose default database credentials via ENV in order to ease overwriting.
+ENV DB_TYPE pgsql
+ENV DB_HOST DB
+ENV DB_PORT 5432
+ENV DB_SUPER_USER postgres
+ENV DB_SUPER_PASS postgres
 ENV DB_NAME ttrss
 ENV DB_USER ttrss
 ENV DB_PASS ttrss
+ENV TTRSS_UPDATER_WAIT_TIME 24h
 
 # Clean up.
 RUN set -xe && apk del --progress --purge && rm -rf /var/cache/apk/*

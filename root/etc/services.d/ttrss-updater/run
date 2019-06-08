@@ -1,3 +1,9 @@
 #!/usr/bin/with-contenv sh
-sleep 24h
-exec s6-setuidgid www-data /srv/update-ttrss.sh --wait-exit 24h
+
+if [ -z "$TTRSS_UPDATER_WAIT_TIME" ]; then
+    TTRSS_UPDATER_WAIT_TIME="24h"
+fi
+
+echo "Startup ttrss-updater; Waiting for $TTRSS_UPDATER_WAIT_TIME until next update"
+sleep $TTRSS_UPDATER_WAIT_TIME
+exec s6-setuidgid www-data /srv/update-ttrss.sh --wait-exit $TTRSS_UPDATER_WAIT_TIME

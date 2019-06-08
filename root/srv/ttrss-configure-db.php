@@ -7,33 +7,35 @@ if (!env('TTRSS_PATH', ''))
     $confpath = '/var/www/ttrss/';
 $conffile = $confpath . 'config.php';
 
-$ename = 'DB';
-$eport = 5432;
+$db_type = env('DB_TYPE', 'pgsql');
+$db_host = env('DB_HOST', 'DB');
 
-$db_type = env('DB_TYPE','pgsql');
-if ($db_type == 'mysql'){
-    $eport = 3306;
+$db_port = getenv('DB_PORT');
+if ($db_port === null && $db_type == 'pgsql') {
+    $db_port = 5432;
+} elseif ($db_port === null && $db_type == 'mysql') {
+    $db_port = 3306;
 }
+
+// database credentials for this instance
+//   database name (DB_NAME) can be supplied or defaults to "ttrss"
+//   database user (DB_USER) can be supplied or defaults to "ttrss"
+//   database pass (DB_PASS) can be supplied or defaults to "ttrss"
+$db_super_user = env('DB_SUPER_USER', 'postgres');
+$db_super_pass = env('DB_SUPER_PASS', 'postgres');
+$db_name = env('DB_NAME', 'ttrss');
+$db_user = env('DB_USER', 'ttrss');
+$db_pass = env('DB_PASS', 'ttrss');
 
 echo 'Configuring database for: ' . $conffile . PHP_EOL;
 
-// check DB_NAME, which will be set automatically for a linked "db" container
-if (!env($ename . '_PORT', '')) {
-    error('The env ' . $ename .'_PORT does not exist. Make sure to run with "--link mypostgresinstance:' . $ename . '"');
-}
-
 $config = array();
 $config['DB_TYPE'] = $db_type;
-$config['DB_HOST'] = env($ename . '_PORT_' . $eport . '_TCP_ADDR');
-$config['DB_PORT'] = env($ename . '_PORT_' . $eport . '_TCP_PORT');
-
-// database credentials for this instance
-//   database name (DB_NAME) can be supplied or detaults to "ttrss"
-//   database user (DB_USER) can be supplied or defaults to database name
-//   database pass (DB_PASS) can be supplied or defaults to database user
-$config['DB_NAME'] = env($ename . '_NAME', 'ttrss');
-$config['DB_USER'] = env($ename . '_USER', $config['DB_NAME']);
-$config['DB_PASS'] = env($ename . '_PASS', $config['DB_USER']);
+$config['DB_HOST'] = $db_host;
+$config['DB_PORT'] = $db_port;
+$config['DB_NAME'] = $db_name;
+$config['DB_USER'] = $db_user;
+$config['DB_PASS'] = $db_pass;
 
 if (!dbcheck($config)) {
     echo 'Database login failed, trying to create ...' . PHP_EOL;
@@ -44,8 +46,8 @@ if (!dbcheck($config)) {
     $super = $config;
 
     $super['DB_NAME'] = null;
-    $super['DB_USER'] = env($ename . '_ENV_USER', 'docker');
-    $super['DB_PASS'] = env($ename . '_ENV_PASS', $super['DB_USER']);
+    $super['DB_USER'] = $db_super_user;
+    $super['DB_PASS'] = $db_super_pass;
 
     $pdo = dbconnect($super);
     $pdo->exec('CREATE ROLE ' . ($config['DB_USER']) . ' WITH LOGIN PASSWORD ' . $pdo->quote($config['DB_PASS']));

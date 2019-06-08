@@ -5,16 +5,15 @@
 
 #############
 # This simply duplicates the logic from ttrss-configure-db.php
-ename='DB';
-eport=5432;
+
+dbhost=$DB_HOST
+dbport=$DB_PORT
 
 if [ "$DB_TYPE" = 'mysql' ];
 then
-	eport=3306;
-	dbhost=$DB_PORT_3306_TCP_ADDR
+	dbport=3306;
 else
 	eport=5432;
-	dbhost=$DB_PORT_5432_TCP_ADDR
 fi
 #############
 
@@ -24,5 +23,5 @@ fi
 # it won't be ready for us yet. Better to exit and restart the container altogether,
 # So set "S6_BEHAVIOUR_IF_STAGE2_FAILS=2" in docker-compose.yml if you need this (i.e., in swarm mode, where dependencies don't work) 
 
-echo "Checking database responds within 1s on $dbhost:$eport..."
-/srv/wait-for $dbhost:$eport --timeout=1 
+echo "Checking database responds within 1s on $dbhost:$dbport..."
+/srv/wait-for $dbhost:$dbport --timeout=1
