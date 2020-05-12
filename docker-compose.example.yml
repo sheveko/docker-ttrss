@@ -2,11 +2,12 @@ version: '3.5'
 
 services:
   ttrss:
-    build: .
+    build:
+      context: https://github.com/dergrafiker/docker-ttrss.git
+      dockerfile: Dockerfile
     container_name: ttrss
     depends_on:
-      ttrss-db:
-        condition: service_healthy
+      - "ttrss-db"
     environment:
       DB_TYPE: pgsql
       DB_HOST: ttrss-db
@@ -27,8 +28,10 @@ services:
       - intern
 
   ttrss-db:
-    image: postgres:11
+    image: postgres:12
     container_name: ttrss-db
+    environment:
+      POSTGRES_PASSWORD: postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
