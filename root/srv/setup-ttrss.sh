@@ -101,18 +101,6 @@ setup_ttrss()
         TTRSS_PORT=:${TTRSS_PORT}
     fi
 
-    # If we've been passed $TTRSS_SELF_URL as an env variable, then use that,
-    # otherwise use the URL we constructed above.
-    if [ -z "$TTRSS_SELF_URL" ]; then
-  	    # Construct the final URL TTRSS will use.
-   	    TTRSS_SELF_URL=${TTRSS_PROTO}://${TTRSS_URL}${TTRSS_PORT}/
-    fi
-
-    echo "Setup: URL is: $TTRSS_SELF_URL"
-
-    # Patch URL path.
-    sed -i -e 's@htt.*/@'"${TTRSS_SELF_URL}"'@g' ${TTRSS_PATH}/config.php
-
     # Check if single user mode is selected
     if [ "$TTRSS_SINGLEUSER" = true ]; then
         echo "Single User mode Selected"

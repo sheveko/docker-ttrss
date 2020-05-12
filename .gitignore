@@ -1,2 +1,3 @@
 # Ignore testing directory
 test/
+/.idea/
