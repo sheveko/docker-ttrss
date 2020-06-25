@@ -50,6 +50,12 @@ update_themes()
     ln -f -s ${TTRSS_PATH_THEMES}/gravemind-feedly-git/feedlish-night.css.map
 }
 
+update_theme_tumblr_gdpr_ua()
+{
+    echo "Updating: ttrss-tumblr-gdpr-ua"
+    ( cd ${TTRSS_PATH}/plugins/tumblr_gdpr_ua && git pull origin HEAD )
+}
+
 update_common()
 {
     if [ -z "$MY_ROOT_UID" ]; then
@@ -73,6 +79,7 @@ update_ttrss
 update_plugin_mobilize
 update_plugin_feediron
 update_themes
+update_theme_tumblr_gdpr_ua
 update_common
 
 echo "Update: Done"

@@ -37,6 +37,9 @@ $config['DB_NAME'] = $db_name;
 $config['DB_USER'] = $db_user;
 $config['DB_PASS'] = $db_pass;
 
+// path to ttrss
+$config['SELF_URL_PATH'] = env('SELF_URL_PATH', 'http://localhost');
+
 if (!dbcheck($config)) {
     echo 'Database login failed, trying to create ...' . PHP_EOL;
     // superuser account to create new database and corresponding user account

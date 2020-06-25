@@ -1,36 +1,52 @@
 version: '3.5'
 
 services:
-  main:
-    build: .
-    links:
-      - postgres
+  ttrss:
+    build:
+      context: https://github.com/dergrafiker/docker-ttrss.git
+      dockerfile: Dockerfile
+    container_name: ttrss
+    depends_on:
+      - "ttrss-db"
     environment:
       DB_TYPE: pgsql
-      DB_HOST: postgres
+      DB_HOST: ttrss-db
       DB_PORT: 5432
       DB_NAME: ttrss
       DB_USER: ttrss
       DB_PASS: ttrss
       DB_ENV_USER: postgres
       DB_ENV_PASS: postgres
-      TTRSS_SELF_URL: https://localhost
+      SELF_URL_PATH: https://localhost
       TTRSS_WITH_SELFSIGNED_CERT: 1
+      HTTP_BASIC_AUTH_USER: foo
+      HTTP_BASIC_AUTH_PW: bar
     restart: unless-stopped
     ports:
       - 443:4443
     networks:
       - intern
 
-  postgres:
-    image: postgres:11
+  ttrss-db:
+    image: postgres:12
+    container_name: ttrss-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
-      - ./test/postgresql/data:/var/lib/postgresql/data
+      - ttrss-db-data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - intern
 
 networks:
   intern:
+
+volumes:
+  ttrss-db-data:
 
 # vim:ts=2 sw=2 et

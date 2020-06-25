@@ -8,7 +8,7 @@ LABEL description="A complete, self-hosted Tiny Tiny RSS (TTRSS) environment." \
 RUN set -xe && \
     apk update && apk upgrade && \
     apk add --no-cache --virtual=run-deps \
-    nginx git ca-certificates curl \
+    nginx git ca-certificates curl apache2-utils \
     php7 php7-fpm php7-curl php7-dom php7-gd php7-iconv php7-fileinfo php7-json \
     php7-mcrypt php7-pgsql php7-pcntl php7-pdo php7-pdo_pgsql \
     php7-mysqli php7-pdo_mysql \
@@ -42,7 +42,10 @@ ENV DB_SUPER_PASS postgres
 ENV DB_NAME ttrss
 ENV DB_USER ttrss
 ENV DB_PASS ttrss
+ENV SELF_URL_PATH 'localhost'
 ENV TTRSS_UPDATER_WAIT_TIME 24h
+ENV HTTP_BASIC_AUTH_USER ''
+ENV HTTP_BASIC_AUTH_PW ''
 
 # Clean up.
 RUN set -xe && apk del --progress --purge && rm -rf /var/cache/apk/*
