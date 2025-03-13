@@ -38,7 +38,6 @@ RUN chmod 755 /srv/wait-for
 
 # Expose Nginx ports.
 EXPOSE 8080
-EXPOSE 4443
 
 # Expose default database credentials via ENV in order to ease overwriting.
 ENV DB_NAME ttrss

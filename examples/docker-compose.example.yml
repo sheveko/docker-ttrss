@@ -1,0 +1,64 @@
+services:
+  app:
+    container_name: tinytinyrss_app
+    build: ../
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=${TTRSS_DB_NAME}
+      - DB_USER=${TTRSS_DB_USER}
+      - DB_ENV_USER=${TTRSS_DB_USER}
+      - DB_PASSWORD=${TTRSS_DB_PASS}
+      - DB_PASS=${TTRSS_DB_PASS}
+      - DB_ENV_PASSWORD=${TTRSS_DB_PASS}
+      - POSTGRES_PASSWORD=${TTRSS_DB_PASS}
+      - DB_PORT=tcp://postgres:5432
+      - DB_PORT_5432_TCP=tcp://postgres:5432
+      - DB_PORT_5432_TCP_ADDR=postgres
+      - DB_PORT_5432_TCP_PORT=5432
+      - DB_PORT_5432_TCP_PROTO=tcp
+      - SELF_URL_PATH=http://ttrss.mydomain.de/
+      - TTRSS_PORT=8080
+      - TTRSS_SELF_URL=http://ttrss.mydomain.de/
+      # - TTRSS_PROTO=http
+      - TTRSS_URL=ttrss.mydomain.de
+      - VIRTUAL_HOST=ttrss.mydomain.de
+      - VIRTUAL_PORT=8080
+    volumes:
+      - ./data/app/www:/var/www
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - intern
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: "Host:ttrss.mydomain.de"
+      traefik.port: "8080"
+      traefik.frontend.redirect.entryPoint: "https"
+      traefik.frontend.redirect.permanent: "true"
+      traefik.frontend.headers.SSLRedirect: "true"
+      traefik.docker.network: "traefik"
+
+  postgres:
+    container_name: tinytinyrss_postgres
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_USER=${TTRSS_DB_USER}
+      - POSTGRES_PASSWORD=${TTRSS_DB_PASS}
+      - POSTGRES_DB=${TTRSS_DB_NAME}
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - intern
+
+networks:
+  intern:
+  traefik:
+    external: true
+    name: traefik
+
+# vim:ts=2 sw=2 et

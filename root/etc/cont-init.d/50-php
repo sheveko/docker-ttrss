@@ -3,8 +3,8 @@
 # Make sure to have a defined set of PHP binaries,
 # regardless of how the package maintainer(s) named those.
 
-rm /usr/bin/php
-ln -s /usr/bin/php81 /usr/bin/php
+rm -f /usr/bin/php
+ln -s /usr/bin/php84 /usr/bin/php
 
-rm /usr/sbin/php-fpm
-ln -s /usr/sbin/php-fpm81 /usr/sbin/php-fpm
+rm -f /usr/sbin/php-fpm
+ln -s /usr/sbin/php-fpm84 /usr/sbin/php-fpm
